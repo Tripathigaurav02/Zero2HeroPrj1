@@ -1,0 +1,29 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Docker Image
+        run: docker build -t devops-app .
+
+      - name: Stop Existing Container
+        run: |
+          docker stop devops-app || true
+          docker rm devops-app || true
+
+      - name: Run Container
+        run: |
+          docker run -d \
+          --name devops-app \
+          -p 80:80 \
+          devops-app
